@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Property, Inquiry } from '../types';
 import { useAppSettings } from '../GlobalContext';
-import { Trash2, Plus, Users, Home as HomeIcon, Lock, Settings, CheckCircle2 } from 'lucide-react';
+import { Trash2, Plus, Users, Home as HomeIcon, Lock, Settings, CheckCircle2, MapPin } from 'lucide-react';
 
 interface AdminPanelProps {
   properties: Property[];
@@ -18,7 +18,7 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
 
   const { settings, updateSettings } = useAppSettings();
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'properties' | 'inquiries' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'properties' | 'inquiries' | 'settings' | 'locations'>('dashboard');
   const [isAdding, setIsAdding] = useState(false);
 
   const [localSettings, setLocalSettings] = useState(settings);
@@ -26,11 +26,11 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
-    if (activeTab === 'settings') {
+    if (activeTab === 'settings' || activeTab === 'locations') {
       setLocalSettings(settings);
       setSaveSuccess(false);
     }
-  }, [activeTab]);
+  }, [activeTab, settings]);
   const [newProperty, setNewProperty] = useState<Partial<Property>>({
     title: '',
     location: '',
@@ -138,6 +138,12 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
             {inquiries.length > 0 && (
               <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{inquiries.length}</span>
             )}
+          </button>
+          <button
+            onClick={() => setActiveTab('locations')}
+            className={`px-6 py-3 rounded-lg font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'locations' ? 'bg-navy text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
+          >
+            <MapPin size={18} /> Manage Locations
           </button>
           <button
             onClick={() => setActiveTab('settings')}
@@ -400,15 +406,40 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        )}
 
-              <div className="pt-6 border-t border-slate-100">
+        {activeTab === 'locations' && (
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 relative mb-24">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h2 className="text-2xl font-bold text-navy">Manage Locations</h2>
+              <button 
+                onClick={() => {
+                  setIsSaving(true);
+                  updateSettings(localSettings);
+                  setTimeout(() => {
+                    setIsSaving(false);
+                    setSaveSuccess(true);
+                    setTimeout(() => setSaveSuccess(false), 3000);
+                  }, 600);
+                }}
+                className="flex items-center gap-2 px-6 py-2 bg-emerald text-white font-bold rounded-lg hover:bg-emerald-600 transition-colors shadow-lg"
+              >
+                {isSaving ? 'Saving...' : saveSuccess ? <><CheckCircle2 size={18}/> Saved!</> : 'Save Changes'}
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold text-navy">Locations Management</h3>
-                  <button onClick={() => {
+                  <button type="button" onClick={(e) => {
+                    e.preventDefault();
                     const newLocations = [
                       ...localSettings.locations,
                       {
-                        id: Date.now().toString(),
+                        id: Date.now().toString() + Math.random().toString(),
                         name: 'New Location',
                         propertyCount: 0,
                         averagePrice: '₹...',
@@ -424,7 +455,9 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
                   {localSettings.locations.map((loc, idx) => (
                     <div key={loc.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-50 p-4 rounded-lg border border-slate-100 relative transition-transform hover:shadow-sm">
                       <button 
-                        onClick={() => {
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
                           const newLocations = localSettings.locations.filter((_, i) => i !== idx);
                           setLocalSettings(prev => ({ ...prev, locations: newLocations }));
                         }}
