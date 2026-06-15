@@ -1,7 +1,7 @@
 import { X, Phone, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FormEvent, useState } from 'react';
-import { COMPANY_PHONE } from '../data';
+import { useAppSettings } from '../GlobalContext';
 import { Inquiry } from '../types';
 
 interface ContactModalProps {
@@ -11,10 +11,11 @@ interface ContactModalProps {
 }
 
 export default function ContactModal({ isOpen, onClose, onSubmitInquiry }: ContactModalProps) {
+  const { settings } = useAppSettings();
   const [formData, setFormData] = useState({ name: '', phone: '', requirement: 'Buy a Property' });
   const [status, setStatus] = useState<'' | 'success' | 'error'>('');
   
-  const cleanPhone = COMPANY_PHONE.replace(/\s+/g, '');
+  const cleanPhone = settings.companyPhone.replace(/\s+/g, '');
   const wappNumber = cleanPhone.replace('+', '');
 
   const handleSubmit = (e: FormEvent) => {

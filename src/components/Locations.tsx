@@ -1,8 +1,10 @@
 import { motion } from 'motion/react';
-import { LOCATIONS } from '../data';
 import { ArrowRight } from 'lucide-react';
+import { useAppSettings } from '../GlobalContext';
 
 export default function Locations() {
+  const { settings } = useAppSettings();
+  
   return (
     <section id="locations" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,7 +21,7 @@ export default function Locations() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {LOCATIONS.map((location, idx) => (
+          {settings.locations.map((location, idx) => (
             <motion.div
               key={location.id}
               initial={{ opacity: 0, scale: 0.95 }}

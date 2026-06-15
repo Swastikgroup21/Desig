@@ -1,7 +1,9 @@
 import { Phone, ArrowRight } from 'lucide-react';
-import { COMPANY_PHONE } from '../data';
+import { useAppSettings } from '../GlobalContext';
 
 export default function CallToAction({ onContactClick }: { onContactClick: () => void }) {
+  const { settings } = useAppSettings();
+
   return (
     <section className="py-20 relative overflow-hidden bg-emerald">
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2850&q=80')] bg-cover bg-center mix-blend-overlay opacity-30"></div>
@@ -15,9 +17,9 @@ export default function CallToAction({ onContactClick }: { onContactClick: () =>
         </p>
         
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <a href={`tel:${COMPANY_PHONE.replace(/\s+/g, '')}`} className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-4 bg-white text-navy rounded-lg font-bold shadow-xl hover:bg-slate-100 transition-all text-base sm:text-lg">
+          <a href={`tel:${settings.companyPhone.replace(/\s+/g, '')}`} className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-4 bg-white text-navy rounded-lg font-bold shadow-xl hover:bg-slate-100 transition-all text-base sm:text-lg">
             <Phone size={20} />
-            Call {COMPANY_PHONE}
+            Call {settings.companyPhone}
           </a>
           <button onClick={onContactClick} className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-4 bg-navy text-white rounded-lg font-bold shadow-xl hover:bg-slate-800 transition-all text-base sm:text-lg border border-navy">
             Book Free Consultation <ArrowRight size={20} />

@@ -1,9 +1,11 @@
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { COMPANY_ADDRESS, COMPANY_PHONE, COMPANY_EMAIL } from '../data';
+import { COMPANY_ADDRESS, COMPANY_EMAIL } from '../data';
 import { FormEvent, useState } from 'react';
 import { Inquiry } from '../types';
+import { useAppSettings } from '../GlobalContext';
 
 export default function ContactSection({ onSubmitInquiry }: { onSubmitInquiry?: (inquiry: Inquiry) => void }) {
+  const { settings } = useAppSettings();
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
   const [status, setStatus] = useState<'' | 'success' | 'error'>('');
 
@@ -53,7 +55,7 @@ export default function ContactSection({ onSubmitInquiry }: { onSubmitInquiry?: 
                 </div>
                 <div>
                   <p className="text-sm text-slate-400 mb-1">Phone Number</p>
-                  <a href={`tel:${COMPANY_PHONE.replace(/\s+/g, '')}`} className="text-xl font-medium hover:text-gold transition-colors">{COMPANY_PHONE}</a>
+                  <a href={`tel:${settings.companyPhone.replace(/\s+/g, '')}`} className="text-xl font-medium hover:text-gold transition-colors">{settings.companyPhone}</a>
                 </div>
               </div>
               

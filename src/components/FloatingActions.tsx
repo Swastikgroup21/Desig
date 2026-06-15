@@ -1,8 +1,9 @@
 import { Phone, MessageCircle } from 'lucide-react';
-import { COMPANY_PHONE } from '../data';
+import { useAppSettings } from '../GlobalContext';
 
 export default function FloatingActions() {
-  const cleanPhone = COMPANY_PHONE.replace(/\s+/g, '');
+  const { settings } = useAppSettings();
+  const cleanPhone = settings.companyPhone.replace(/\s+/g, '');
   const wappNumber = cleanPhone.replace('+', '');
 
   return (
@@ -16,7 +17,7 @@ export default function FloatingActions() {
         <Phone size={24} className="group-hover:animate-ping absolute opacity-0 group-hover:opacity-30" />
         <Phone size={24} className="relative z-10" fill="currentColor" />
         <span className="absolute right-full mr-4 bg-navy text-white text-sm font-medium px-3 py-1.5 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
-          Call {COMPANY_PHONE}
+          Call {settings.companyPhone}
         </span>
       </a>
 

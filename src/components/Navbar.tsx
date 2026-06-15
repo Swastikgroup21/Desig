@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { COMPANY_PHONE } from '../data';
+import { useAppSettings } from '../GlobalContext';
 
 export default function Navbar({ 
   onContactClick,
@@ -14,6 +14,7 @@ export default function Navbar({
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { settings } = useAppSettings();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,7 +90,7 @@ export default function Navbar({
               </a>
             ))}
             
-            <a href={`tel:${COMPANY_PHONE.replace(/\s+/g, '')}`} className="flex items-center gap-2 px-6 py-2.5 bg-royal text-white rounded-full font-medium shadow-lg shadow-royal/30 hover:bg-navy transition-all hover:scale-105 active:scale-95">
+            <a href={`tel:${settings.companyPhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 px-6 py-2.5 bg-royal text-white rounded-full font-medium shadow-lg shadow-royal/30 hover:bg-navy transition-all hover:scale-105 active:scale-95">
               <Phone size={16} />
               <span>Call Now</span>
             </a>
@@ -128,9 +129,9 @@ export default function Navbar({
                 </a>
               ))}
               <div className="pt-4 flex flex-col gap-3">
-                <a href={`tel:${COMPANY_PHONE.replace(/\s+/g, '')}`} className="flex justify-center items-center gap-2 w-full px-4 py-3 bg-navy text-white rounded-lg font-medium shadow-md">
+                <a href={`tel:${settings.companyPhone.replace(/\s+/g, '')}`} className="flex justify-center items-center gap-2 w-full px-4 py-3 bg-navy text-white rounded-lg font-medium shadow-md">
                   <Phone size={18} />
-                  <span>Call {COMPANY_PHONE}</span>
+                  <span>Call {settings.companyPhone}</span>
                 </a>
                 <button onClick={() => { setMobileMenuOpen(false); onContactClick(); }} className="flex justify-center items-center w-full px-4 py-3 bg-gold text-navy rounded-lg font-medium shadow-md">
                   Submit Inquiry

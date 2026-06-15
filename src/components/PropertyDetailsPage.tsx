@@ -1,6 +1,6 @@
 import { MapPin, Home, BedDouble, Bath, Phone, Heart, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Property } from '../types';
-import { COMPANY_PHONE } from '../data';
+import { useAppSettings } from '../GlobalContext';
 import { motion } from 'motion/react';
 
 interface PropertyDetailsPageProps {
@@ -10,9 +10,11 @@ interface PropertyDetailsPageProps {
 }
 
 export default function PropertyDetailsPage({ property, onBack, onContactClick }: PropertyDetailsPageProps) {
+  const { settings } = useAppSettings();
+
   if (!property) return null;
 
-  const cleanPhone = COMPANY_PHONE.replace(/\s+/g, '');
+  const cleanPhone = settings.companyPhone.replace(/\s+/g, '');
 
   return (
     <motion.div 
@@ -173,7 +175,7 @@ export default function PropertyDetailsPage({ property, onBack, onContactClick }
                   className="flex items-center justify-center gap-3 w-full py-4 bg-royal hover:bg-navy text-white rounded-xl font-bold transition-all shadow-md shadow-royal/20 hover:shadow-navy/20"
                 >
                   <Phone size={20} />
-                  Call {COMPANY_PHONE}
+                  Call {settings.companyPhone}
                 </a>
                 
                 <button 

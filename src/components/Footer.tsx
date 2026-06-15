@@ -1,7 +1,10 @@
 import { Facebook, Twitter, Instagram, Linkedin, MapPin, Mail, Phone, ArrowUp } from 'lucide-react';
-import { COMPANY_ADDRESS, COMPANY_EMAIL, COMPANY_PHONE } from '../data';
+import { COMPANY_ADDRESS, COMPANY_EMAIL } from '../data';
+import { useAppSettings } from '../GlobalContext';
 
 export default function Footer({ onNavigate }: { onNavigate?: (route: string) => void }) {
+  const { settings } = useAppSettings();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -75,7 +78,7 @@ export default function Footer({ onNavigate }: { onNavigate?: (route: string) =>
               </li>
               <li className="flex gap-3 text-slate-400">
                 <Phone className="shrink-0 text-gold" size={20} />
-                <a href={`tel:${COMPANY_PHONE.replace(/\s+/g, '')}`} className="hover:text-gold transition-colors">{COMPANY_PHONE}</a>
+                <a href={`tel:${settings.companyPhone.replace(/\s+/g, '')}`} className="hover:text-gold transition-colors">{settings.companyPhone}</a>
               </li>
               <li className="flex gap-3 text-slate-400">
                 <Mail className="shrink-0 text-gold" size={20} />
