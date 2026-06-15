@@ -23,6 +23,7 @@ import ContactModal from './components/ContactModal';
 import PropertiesPage from './components/PropertiesPage';
 import PropertyDetailsPage from './components/PropertyDetailsPage';
 import AdminPanel from './components/AdminPanel';
+import WelcomePopup from './components/WelcomePopup';
 import { Property, Inquiry } from './types';
 import { PROPERTIES as INITIAL_PROPERTIES } from './data';
 
@@ -121,6 +122,7 @@ export default function App() {
       
       {currentRoute !== 'admin' && <FloatingActions />}
       <ContactModal isOpen={isContactModalOpen} onClose={closeContactModal} onSubmitInquiry={handleAddInquiry} />
+      {currentRoute === 'home' && <WelcomePopup onContactClick={openContactModal} />}
     </div>
   );
 }
