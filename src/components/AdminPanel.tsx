@@ -40,6 +40,7 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
     bathrooms: 0,
     type: 'Apartment',
     image: '',
+    images: [],
     status: 'For Sale',
     featured: false
   });
@@ -63,7 +64,7 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
     } as Property);
     setIsAdding(false);
     setNewProperty({
-      title: '', location: '', price: '', area: '', bedrooms: 0, bathrooms: 0, type: 'Apartment', image: '', status: 'For Sale', featured: false
+      title: '', location: '', price: '', area: '', bedrooms: 0, bathrooms: 0, type: 'Apartment', image: '', images: [], status: 'For Sale', featured: false
     });
   };
 
@@ -232,15 +233,49 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
                     </select>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-1">Image URL or Upload</label>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input type="text" className="w-full border rounded-lg p-2" placeholder="https://..." value={newProperty.image} onChange={e => setNewProperty({...newProperty, image: e.target.value})} />
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="w-full sm:w-auto border rounded-lg p-1.5 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-navy file:text-white hover:file:bg-slate-800"
-                        onChange={(e) => handleImageUpload(e, (url) => setNewProperty({...newProperty, image: url}))}
-                      />
+                    <label className="block text-sm font-medium mb-1">Images (Up to 5)</label>
+                    <div className="space-y-3">
+                      {[0, 1, 2, 3, 4].map((index) => (
+                        <div key={index} className="flex flex-col sm:flex-row gap-2">
+                          <input 
+                            type="text" 
+                            className="w-full border rounded-lg p-2" 
+                            placeholder={`Image URL ${index + 1}`} 
+                            value={newProperty.images?.[index] || (index === 0 ? newProperty.image : '') || ''} 
+                            onChange={e => {
+                              const newImages = [...(newProperty.images || [])];
+                              // Fill empty slots if necessary
+                              for (let i = 0; i < index; i++) {
+                                if (!newImages[i]) newImages[i] = i === 0 ? newProperty.image || '' : '';
+                              }
+                              newImages[index] = e.target.value;
+                              
+                              setNewProperty({
+                                ...newProperty, 
+                                images: newImages,
+                                ...(index === 0 ? { image: e.target.value } : {})
+                              });
+                            }} 
+                          />
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="w-full sm:w-auto border rounded-lg p-1.5 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-navy file:text-white hover:file:bg-slate-800"
+                            onChange={(e) => handleImageUpload(e, (url) => {
+                              const newImages = [...(newProperty.images || [])];
+                              for (let i = 0; i < index; i++) {
+                                if (!newImages[i]) newImages[i] = i === 0 ? newProperty.image || '' : '';
+                              }
+                              newImages[index] = url;
+                              setNewProperty({
+                                ...newProperty, 
+                                images: newImages,
+                                ...(index === 0 ? { image: url } : {})
+                              });
+                            })}
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div className="md:col-span-2 flex items-center gap-2">
@@ -329,10 +364,16 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
                         <span className="text-slate-500 text-sm">Phone:</span>
                         <span className="font-medium text-navy">{inq.phone}</span>
                       </div>
-                      <div className="flex justify-between pb-2">
+                      <div className="flex justify-between pb-2 items-center">
                         <span className="text-slate-500 text-sm">Req:</span>
-                        <span className="font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-xs">{inq.requirement}</span>
+                        <span className="font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-xs text-right break-words max-w-[70%]">{inq.requirement}</span>
                       </div>
+                      {inq.query && (
+                        <div className="pt-2 pb-2">
+                          <span className="text-slate-500 text-sm block mb-1">Message:</span>
+                          <p className="text-sm font-medium text-navy bg-slate-50 p-2 rounded break-words max-h-24 overflow-y-auto">{inq.query}</p>
+                        </div>
+                      )}
                     </div>
                     <a 
                       href={`tel:${inq.phone.replace(/\\s+/g, '')}`}

@@ -104,6 +104,7 @@ export default function App() {
             property={selectedProperty} 
             onBack={() => handleNavigate('properties')} 
             onContactClick={openContactModal}
+            onSubmitInquiry={handleAddInquiry}
           />
         </main>
       ) : (

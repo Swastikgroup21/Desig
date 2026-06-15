@@ -1,20 +1,49 @@
-import { MapPin, Home, BedDouble, Bath, Phone, Heart, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { Property } from '../types';
+import { MapPin, Home, BedDouble, Bath, Phone, Heart, ArrowLeft, CheckCircle2, Send } from 'lucide-react';
+import { Property, Inquiry } from '../types';
 import { useAppSettings } from '../GlobalContext';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
+import React, { useState } from 'react';
 
 interface PropertyDetailsPageProps {
   property: Property | null;
   onBack: () => void;
   onContactClick: () => void;
+  onSubmitInquiry: (inquiry: Inquiry) => void;
 }
 
-export default function PropertyDetailsPage({ property, onBack, onContactClick }: PropertyDetailsPageProps) {
+export default function PropertyDetailsPage({ property, onBack, onContactClick, onSubmitInquiry }: PropertyDetailsPageProps) {
   const { settings } = useAppSettings();
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [formData, setFormData] = useState({ name: '', phone: '', query: '' });
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   if (!property) return null;
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newInquiry: Inquiry = {
+      id: Date.now().toString(),
+      name: formData.name,
+      phone: formData.phone,
+      requirement: `Inquiry for ${property.title}`,
+      propertyId: property.id,
+      propertyTitle: property.title,
+      query: formData.query,
+      status: 'New',
+      date: new Date().toLocaleDateString()
+    };
+    onSubmitInquiry(newInquiry);
+    setIsSubmitted(true);
+    setFormData({ name: '', phone: '', query: '' });
+    // Reset success message after 5 seconds
+    setTimeout(() => setIsSubmitted(false), 5000);
+  };
+
   const cleanPhone = settings.companyPhone.replace(/\s+/g, '');
+  
+  const allImages = property.images && property.images.length > 0 
+    ? property.images.filter(Boolean) 
+    : [property.image].filter(Boolean);
 
   return (
     <motion.div 
@@ -45,22 +74,45 @@ export default function PropertyDetailsPage({ property, onBack, onContactClick }
         </div>
 
         {/* Hero Image Section */}
-        <div className="w-full h-[50vh] md:h-[60vh] rounded-3xl overflow-hidden relative shadow-lg mb-10">
-          <img 
-            src={property.image} 
-            alt={property.title} 
-            className="w-full h-full object-cover"
-          />
-          {property.featured && (
-            <div className="absolute top-6 left-6">
-              <span className="bg-gold text-navy text-sm font-bold px-4 py-2 uppercase tracking-wider rounded-lg shadow-lg">
-                Featured Property
-              </span>
+        <div className="mb-10">
+          <div className="w-full h-[50vh] md:h-[60vh] rounded-3xl overflow-hidden relative shadow-lg">
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={activeImageIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                src={allImages[activeImageIndex]} 
+                alt={property.title} 
+                className="w-full h-full object-cover"
+              />
+            </AnimatePresence>
+            {property.featured && (
+              <div className="absolute top-6 left-6 z-10">
+                <span className="bg-gold text-navy text-sm font-bold px-4 py-2 uppercase tracking-wider rounded-lg shadow-lg">
+                  Featured Property
+                </span>
+              </div>
+            )}
+            <button className="absolute top-6 right-6 p-4 bg-white/90 backdrop-blur-sm rounded-full text-slate-400 hover:text-red-500 z-10 transition-colors shadow-lg shadow-black/10">
+              <Heart size={24} />
+            </button>
+          </div>
+          
+          {allImages.length > 1 && (
+            <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
+              {allImages.map((img, idx) => (
+                <button 
+                  key={idx} 
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`w-24 h-24 rounded-xl overflow-hidden relative shadow-sm shrink-0 border-2 transition-all ${activeImageIndex === idx ? 'border-royal scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                >
+                  <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
             </div>
           )}
-          <button className="absolute top-6 right-6 p-4 bg-white/90 backdrop-blur-sm rounded-full text-slate-400 hover:text-red-500 hover:bg-white transition-colors shadow-lg shadow-black/10">
-            <Heart size={24} />
-          </button>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12">
@@ -177,13 +229,58 @@ export default function PropertyDetailsPage({ property, onBack, onContactClick }
                   <Phone size={20} />
                   Call {settings.companyPhone}
                 </a>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-slate-500">Or we can call you</span>
+                  </div>
+                </div>
                 
-                <button 
-                  onClick={onContactClick}
-                  className="flex items-center justify-center gap-3 w-full py-4 border-2 border-slate-200 hover:border-royal hover:bg-slate-50 rounded-xl text-navy font-bold transition-all"
-                >
-                  Request Callback
-                </button>
+                {isSubmitted ? (
+                  <div className="bg-emerald/10 border border-emerald/20 text-emerald rounded-xl p-6 text-center">
+                    <div className="w-12 h-12 bg-emerald text-white rounded-full flex items-center justify-center mx-auto mb-3">
+                      <CheckCircle2 size={24} />
+                    </div>
+                    <h4 className="font-bold mb-1">Request Sent!</h4>
+                    <p className="text-sm">Our team will contact you shortly.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <input 
+                      type="text" 
+                      placeholder="Your Name" 
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-royal/20 focus:border-royal transition-all"
+                    />
+                    <input 
+                      type="tel" 
+                      placeholder="Phone Number" 
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-royal/20 focus:border-royal transition-all"
+                    />
+                    <textarea 
+                      placeholder="I am interested in this property..." 
+                      rows={2}
+                      value={formData.query}
+                      onChange={(e) => setFormData({...formData, query: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-royal/20 focus:border-royal transition-all resize-none"
+                    ></textarea>
+                    <button 
+                      type="submit"
+                      className="flex items-center justify-center gap-2 w-full py-4 border-2 border-royal bg-royal/5 hover:bg-royal text-royal hover:text-white rounded-xl font-bold transition-all"
+                    >
+                      <Send size={18} />
+                      Send Inquiry
+                    </button>
+                  </form>
+                )}
               </div>
 
               <div className="mt-8 pt-6 border-t border-slate-100 text-center">

@@ -8,6 +8,7 @@ export interface Property {
   bathrooms: number;
   type: string;
   image: string;
+  images?: string[];
   status: 'For Sale' | 'For Rent';
   featured?: boolean;
 }
@@ -35,6 +36,10 @@ export interface Inquiry {
   phone: string;
   requirement: string;
   date: string;
+  propertyId?: string;
+  propertyTitle?: string;
+  query?: string;
+  status?: string;
 }
 
 export interface Service {

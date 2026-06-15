@@ -13,20 +13,14 @@ export default function WelcomePopup({ onContactClick }: WelcomePopupProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Check if we already showed it in this session to not annoy the user too much
-    const hasSeenPopup = sessionStorage.getItem('swastik_seen_popup');
-    
-    if (!hasSeenPopup) {
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 3000); // 3 seconds after page load
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, 3000); // 3 seconds after page load
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClose = () => {
     setIsOpen(false);
-    sessionStorage.setItem('swastik_seen_popup', 'true');
   };
 
   const handleInquire = () => {
