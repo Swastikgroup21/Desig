@@ -90,7 +90,7 @@ export default function App() {
           <InvestmentBenefits />
           <Stats />
           <Testimonials />
-          <ContactSection />
+          <ContactSection onSubmitInquiry={handleAddInquiry} />
           <CallToAction onContactClick={openContactModal} />
         </main>
       ) : currentRoute === 'properties' ? (

@@ -1,8 +1,9 @@
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { COMPANY_ADDRESS, COMPANY_PHONE, COMPANY_EMAIL } from '../data';
 import { FormEvent, useState } from 'react';
+import { Inquiry } from '../types';
 
-export default function ContactSection() {
+export default function ContactSection({ onSubmitInquiry }: { onSubmitInquiry?: (inquiry: Inquiry) => void }) {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
   const [status, setStatus] = useState<'' | 'success' | 'error'>('');
 
@@ -12,11 +13,19 @@ export default function ContactSection() {
       setStatus('error');
       return;
     }
-    // Simulate API call
-    setTimeout(() => {
-      setStatus('success');
-      setFormData({ name: '', phone: '', email: '', message: '' });
-    }, 1000);
+    
+    if (onSubmitInquiry) {
+      onSubmitInquiry({
+        id: Date.now().toString(),
+        name: formData.name,
+        phone: formData.phone,
+        requirement: formData.message,
+        date: new Date().toISOString()
+      });
+    }
+
+    setStatus('success');
+    setFormData({ name: '', phone: '', email: '', message: '' });
   };
 
   return (
