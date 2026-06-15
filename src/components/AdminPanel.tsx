@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Property, Inquiry } from '../types';
 import { useAppSettings } from '../GlobalContext';
 import { Trash2, Plus, Users, Home as HomeIcon, Lock, Settings, CheckCircle2, MapPin } from 'lucide-react';
@@ -369,6 +369,31 @@ export default function AdminPanel({ properties, inquiries, onAddProperty, onDel
             
             <div className="space-y-8">
               <div>
+                <h3 className="text-lg font-bold text-navy mb-4">Google SEO Settings</h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-600">SEO Title</label>
+                    <input 
+                      type="text" 
+                      className="w-full border rounded-lg p-2" 
+                      value={localSettings.seoTitle} 
+                      onChange={e => setLocalSettings(prev => ({ ...prev, seoTitle: e.target.value }))} 
+                      placeholder="e.g. Swastik Properties | Find your Dream Home"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-600">SEO Description</label>
+                    <textarea 
+                      className="w-full border rounded-lg p-2 min-h-[80px]" 
+                      value={localSettings.seoDescription} 
+                      onChange={e => setLocalSettings(prev => ({ ...prev, seoDescription: e.target.value }))} 
+                      placeholder="e.g. Explore top real estate properties bridging buyers and sellers seamlessly..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-slate-100">
                 <h3 className="text-lg font-bold text-navy mb-4">Contact Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>

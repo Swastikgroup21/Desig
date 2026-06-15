@@ -6,12 +6,16 @@ interface AppSettings {
   companyPhone: string;
   heroImage: string;
   locations: Location[];
+  seoTitle: string;
+  seoDescription: string;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   companyPhone: DEFAULT_PHONE,
   heroImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2850&q=80',
   locations: DEFAULT_LOCATIONS,
+  seoTitle: 'Swastik Properties',
+  seoDescription: 'Find your dream home with Swastik Properties.',
 };
 
 interface AppSettingsContextType {
@@ -35,6 +39,16 @@ export const AppSettingsProvider: React.FC<{children: React.ReactNode}> = ({ chi
 
   useEffect(() => {
     localStorage.setItem('swastik_settings', JSON.stringify(settings));
+    
+    // Apply SEO settings
+    document.title = settings.seoTitle;
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.setAttribute('name', 'description');
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute('content', settings.seoDescription);
   }, [settings]);
 
   const updateSettings = (newSettings: Partial<AppSettings>) => {
